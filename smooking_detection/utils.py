@@ -8,30 +8,6 @@ from pathlib import Path
 from kaggle.api.kaggle_api_extended import KaggleApi
 
 
-def prepare_data(data_dir: str, output_dir: str) -> None:
-    os.makedirs(output_dir, exist_ok=True)
-
-    folders = [
-        ("training", "Training/Training"),
-        ("validation", "Validation/Validation"),
-        ("testing", "Testing/Testing"),
-    ]
-
-    for target_name, source_name in folders:
-        source_path = os.path.join(data_dir, source_name)
-        target_path = os.path.join(output_dir, target_name)
-
-        if os.path.exists(source_path):
-            if os.path.exists(target_path):
-                shutil.rmtree(target_path)
-            shutil.copytree(source_path, target_path)
-            print(f"✓ {target_name}")
-        else:
-            print(f"✗ {target_name} (not found at {source_path})")
-
-    print(f"Data ready in: {output_dir}")
-
-
 def get_git_commit_id():
     try:
         return subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
@@ -75,7 +51,6 @@ def download_data(data_dir: str) -> None:
 
     api.dataset_download_files(dataset, path=data_dir, unzip=True, quiet=False)
     print("Kaggle download completed!")
-    prepare_data(data_dir)
 
 
 def export_to_onnx(
@@ -139,3 +114,4 @@ def export_to_onnx(
         print(f"ONNX validation successful. Output shape: {onnx_output.shape}")
     except Exception as e:
         print(f"ONNX validation failed: {e}")
+
