@@ -1,0 +1,6 @@
+data_dir: data
+batch_size: 64
+num_workers: 8
+image_size: 224
+class_names: ["notsmoking", "smoking"]
+augment: True

@@ -1,0 +1,21 @@
+defaults:
+  - _self_
+  - model: vit_model
+  - data: default
+  - trainer: default
+  - optimizer: adamw
+
+
+mlflow:
+  tracking_uri: "http://127.0.0.1:8080"
+
+export:
+  onnx_path: "triton/export/onnx/model.onnx"
+  fp16: True
+
+checkpoint:
+  dirpath: "./checkpoints"
+
+model_path: "./checkpoints/best_model_weights.pth"
+image_path: "./infer_images/sm.PNG"
+threshold: 0.5
