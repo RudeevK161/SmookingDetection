@@ -67,8 +67,7 @@ def main(cfg: DictConfig) -> None:
     trainer.test(model, datamodule=data_module)
 
     best_model = SmookingBinaryClassifier.load_from_checkpoint(
-        checkpoint_callback.best_model_path,
-        cfg=cfg
+        checkpoint_callback.best_model_path, cfg=cfg
     )
 
     export_to_onnx(

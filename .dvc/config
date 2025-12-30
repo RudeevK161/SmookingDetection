@@ -1,0 +1,5 @@
+[core]
+    no_scm = True
+    remote = data
+['remote "data"']
+    url = https://storage.yandexcloud.net/smoking-data/

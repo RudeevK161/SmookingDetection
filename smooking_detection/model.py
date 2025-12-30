@@ -14,7 +14,9 @@ class SmookingBinaryClassifier(pl.LightningModule):
         super().__init__()
         self.cfg = cfg
 
-        model_str = getattr(cfg.model, "vit_model_name", 'WinKawaks/vit-tiny-patch16-224')
+        model_str = getattr(
+            cfg.model, "vit_model_name", "WinKawaks/vit-tiny-patch16-224"
+        )
         id2label = getattr(cfg.model, "id2label", {0: "not_smoking", 1: "smoking"})
         label2id = getattr(cfg.model, "label2id", {"not_smoking": 0, "smoking": 1})
         if isinstance(id2label, DictConfig):
@@ -27,9 +29,7 @@ class SmookingBinaryClassifier(pl.LightningModule):
             self.model = ConvNet()
         elif "vit" in cfg.model.model_name.lower():
             self.model = ViTModel(
-                model_name=model_str,
-                id2label=id2label,
-                label2id=label2id
+                model_name=model_str, id2label=id2label, label2id=label2id
             )
 
         self.loss_fn = nn.CrossEntropyLoss()
@@ -62,7 +62,9 @@ class SmookingBinaryClassifier(pl.LightningModule):
         self.train_f1(preds, y)
 
         self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
-        self.log("train_acc", self.train_acc, on_step=True, on_epoch=True, prog_bar=True)
+        self.log(
+            "train_acc", self.train_acc, on_step=True, on_epoch=True, prog_bar=True
+        )
         self.log("train_f1", self.train_f1, on_step=True, on_epoch=True, prog_bar=True)
 
         return loss

@@ -4,8 +4,9 @@ from transformers import ViTForImageClassification, ViTImageProcessor
 
 
 class ViTModel(nn.Module):
-    def __init__(self, model_name='WinKawaks/vit-tiny-patch16-224',
-                 id2label=None, label2id=None):
+    def __init__(
+        self, model_name="WinKawaks/vit-tiny-patch16-224", id2label=None, label2id=None
+    ):
         super().__init__()
 
         self.model = ViTForImageClassification.from_pretrained(
@@ -16,12 +17,9 @@ class ViTModel(nn.Module):
             ignore_mismatched_sizes=True,
         )
 
-        if hasattr(self.model, 'classifier'):
+        if hasattr(self.model, "classifier"):
             if isinstance(self.model.classifier, nn.Linear):
-                self.model.classifier = nn.Linear(
-                    self.model.classifier.in_features,
-                    2
-                )
+                self.model.classifier = nn.Linear(self.model.classifier.in_features, 2)
 
         self.processor = ViTImageProcessor.from_pretrained(model_name)
 
@@ -32,11 +30,10 @@ class ViTModel(nn.Module):
 
         outputs = self.model(x)
 
-        return outputs.logits if hasattr(outputs, 'logits') else outputs
+        return outputs.logits if hasattr(outputs, "logits") else outputs
 
 
 class ViTPreprocessor:
-
     image_mean = [0.485, 0.456, 0.406]
     image_std = [0.229, 0.224, 0.225]
 

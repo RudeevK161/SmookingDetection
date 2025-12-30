@@ -12,14 +12,19 @@ from models.vit_model import ViTPreprocessor
 
 
 class BinarySmokingDataset(Dataset):
-    def __init__(self, root: str, transform: Optional[transforms.Compose] = None,
-                 class_names: Optional[List[str]] = None):
-
+    def __init__(
+        self,
+        root: str,
+        transform: Optional[transforms.Compose] = None,
+        class_names: Optional[List[str]] = None,
+    ):
         self.root = root
         self.transform = transform
 
         self.class_names = class_names if class_names else ["notsmoking", "smoking"]
-        self.class_to_idx = {cls_name: idx for idx, cls_name in enumerate(self.class_names)}
+        self.class_to_idx = {
+            cls_name: idx for idx, cls_name in enumerate(self.class_names)
+        }
 
         self.images: List[str] = []
         self.labels: List[int] = []
@@ -58,21 +63,29 @@ class BinarySmokingDataset(Dataset):
                         self.labels.append(label)
 
     def _is_image_file(self, filename: str) -> bool:
-        valid_extensions = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif')
+        valid_extensions = (".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")
         return filename.lower().endswith(valid_extensions)
 
     def _get_label_from_filename(self, filename: str) -> Optional[int]:
         filename_lower = filename.lower()
 
-        if 'notsmoking' in filename_lower or 'not_' in filename_lower or 'no_' in filename_lower:
+        if (
+            "notsmoking" in filename_lower
+            or "not_" in filename_lower
+            or "no_" in filename_lower
+        ):
             return self.class_to_idx.get("notsmoking", 0)
-        elif 'smoking' in filename_lower or 'smoke' in filename_lower:
+        elif "smoking" in filename_lower or "smoke" in filename_lower:
             return self.class_to_idx.get("smoking", 1)
 
-        parts = filename_lower.split('_', 1)
+        parts = filename_lower.split("_", 1)
         if len(parts) > 0:
             first_part = parts[0]
-            if first_part == "notsmoking" or first_part.startswith("not") or first_part.startswith("no"):
+            if (
+                first_part == "notsmoking"
+                or first_part.startswith("not")
+                or first_part.startswith("no")
+            ):
                 return self.class_to_idx.get("notsmoking", 0)
             elif first_part == "smoking" or first_part.startswith("smok"):
                 return self.class_to_idx.get("smoking", 1)
@@ -82,15 +95,14 @@ class BinarySmokingDataset(Dataset):
 
 class BinarySmokingDataModule(pl.LightningDataModule):
     def __init__(
-            self,
-            data_dir: str,
-            batch_size: int = 32,
-            num_workers: int = 4,
-            image_size: int = 224,
-            class_names: Optional[List[str]] = None,
-            augment: bool = True,
+        self,
+        data_dir: str,
+        batch_size: int = 32,
+        num_workers: int = 4,
+        image_size: int = 224,
+        class_names: Optional[List[str]] = None,
+        augment: bool = True,
     ):
-
         super().__init__()
 
         self.data_dir = data_dir
@@ -102,7 +114,7 @@ class BinarySmokingDataModule(pl.LightningDataModule):
         self.mean, self.std = ViTPreprocessor.image_mean, ViTPreprocessor.image_std
 
         self.class_names = class_names if class_names else ["notsmoking", "smoking"]
-        self.idx_to_class = {0: 'not_smoking', 1: 'smoking'}
+        self.idx_to_class = {0: "not_smoking", 1: "smoking"}
         self.num_classes = len(self.class_names)
 
         self.train_transform, self.val_transform = self._create_transforms()
@@ -149,7 +161,7 @@ class BinarySmokingDataModule(pl.LightningDataModule):
         return train_transforms, val_transforms
 
     def prepare_data(self):
-        for split in ['Training', 'Validation', 'Testing']:
+        for split in ["Training", "Validation", "Testing"]:
             split_dir = os.path.join(self.data_dir, split)
             if not os.path.exists(split_dir):
                 print(f"Warning: Directory {split_dir} does not exist")
@@ -157,30 +169,27 @@ class BinarySmokingDataModule(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         if stage == "fit" or stage is None:
-            train_dir = os.path.join(self.data_dir, 'Training')
-            val_dir = os.path.join(self.data_dir, 'Validation')
+            train_dir = os.path.join(self.data_dir, "Training")
+            val_dir = os.path.join(self.data_dir, "Validation")
 
             self.train_dataset = BinarySmokingDataset(
                 root=train_dir,
                 transform=self.train_transform,
-                class_names=self.class_names
+                class_names=self.class_names,
             )
 
             self.val_dataset = BinarySmokingDataset(
-                root=val_dir,
-                transform=self.val_transform,
-                class_names=self.class_names
+                root=val_dir, transform=self.val_transform, class_names=self.class_names
             )
 
         if stage == "test" or stage is None:
-            test_dir = os.path.join(self.data_dir, 'Testing')
+            test_dir = os.path.join(self.data_dir, "Testing")
 
             self.test_dataset = BinarySmokingDataset(
                 root=test_dir,
                 transform=self.val_transform,
-                class_names=self.class_names
+                class_names=self.class_names,
             )
-
 
     def train_dataloader(self) -> DataLoader:
         return DataLoader(
@@ -190,7 +199,7 @@ class BinarySmokingDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
             pin_memory=True,
             drop_last=True,
-            persistent_workers=True
+            persistent_workers=True,
         )
 
     def val_dataloader(self) -> DataLoader:
@@ -200,7 +209,7 @@ class BinarySmokingDataModule(pl.LightningDataModule):
             shuffle=False,
             num_workers=self.num_workers,
             pin_memory=True,
-            persistent_workers=True
+            persistent_workers=True,
         )
 
     def test_dataloader(self) -> DataLoader:

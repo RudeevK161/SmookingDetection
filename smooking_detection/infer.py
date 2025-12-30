@@ -1,4 +1,3 @@
-import json
 import hydra
 import torch
 import torch.nn.functional as F
@@ -24,7 +23,9 @@ class SmookingDetectionInference:
             [
                 transforms.Resize((cfg.data.image_size, cfg.data.image_size)),
                 transforms.ToTensor(),
-                transforms.Normalize(mean=ViTPreprocessor.image_mean, std=ViTPreprocessor.image_std)
+                transforms.Normalize(
+                    mean=ViTPreprocessor.image_mean, std=ViTPreprocessor.image_std
+                ),
             ]
         )
 
@@ -32,7 +33,9 @@ class SmookingDetectionInference:
         if cfg.model.model_name == "conv_net":
             base_model = ConvNet()
         elif "vit" in cfg.model.model_name.lower():
-            model_str = getattr(cfg.model, "vit_model_name", 'WinKawaks/vit-tiny-patch16-224')
+            model_str = getattr(
+                cfg.model, "vit_model_name", "WinKawaks/vit-tiny-patch16-224"
+            )
             id2label = getattr(cfg.model, "id2label", {0: "not_smoking", 1: "smoking"})
             label2id = getattr(cfg.model, "label2id", {"not_smoking": 0, "smoking": 1})
             if isinstance(id2label, DictConfig):
@@ -42,9 +45,7 @@ class SmookingDetectionInference:
                 label2id = OmegaConf.to_container(label2id, resolve=True)
 
             base_model = ViTModel(
-                model_name=model_str,
-                id2label=id2label,
-                label2id=label2id
+                model_name=model_str, id2label=id2label, label2id=label2id
             )
         else:
             raise ValueError(f"Unsupported model: {self.cfg.model.model_name}")
@@ -78,9 +79,11 @@ class SmookingDetectionInference:
             pred_idx = 0
             is_smoking = False
 
-        if hasattr(self, 'cfg') and hasattr(self.cfg.model, 'id2label'):
-            id2label = getattr(self.cfg.model, "id2label", {0: "not_smoking", 1: "smoking"})
-        elif hasattr(self, 'model') and hasattr(self.model, 'id2label'):
+        if hasattr(self, "cfg") and hasattr(self.cfg.model, "id2label"):
+            id2label = getattr(
+                self.cfg.model, "id2label", {0: "not_smoking", 1: "smoking"}
+            )
+        elif hasattr(self, "model") and hasattr(self.model, "id2label"):
             id2label = self.model.id2label
         else:
             id2label = {0: "not_smoking", 1: "smoking"}
@@ -102,7 +105,6 @@ class SmookingDetectionInference:
 
 @hydra.main(version_base=None, config_path="../config", config_name="config")
 def detection_smooking(cfg: DictConfig):
-
     if not cfg.image_path:
         raise ValueError("image_path must be provided")
 
@@ -110,7 +112,7 @@ def detection_smooking(cfg: DictConfig):
         default_paths = [
             "./export/model.pth",
             "./checkpoints/last.ckpt",
-            "./checkpoints/best.ckpt"
+            "./checkpoints/best.ckpt",
         ]
         for path in default_paths:
             if Path(path).exists():

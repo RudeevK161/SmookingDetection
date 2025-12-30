@@ -12,9 +12,9 @@ def prepare_data(data_dir: str, output_dir: str) -> None:
     os.makedirs(output_dir, exist_ok=True)
 
     folders = [
-        ('training', 'Training/Training'),
-        ('validation', 'Validation/Validation'),
-        ('testing', 'Testing/Testing')
+        ("training", "Training/Training"),
+        ("validation", "Validation/Validation"),
+        ("testing", "Testing/Testing"),
     ]
 
     for target_name, source_name in folders:
@@ -40,7 +40,6 @@ def get_git_commit_id():
 
 
 def download_data(data_dir: str) -> None:
-
     if os.path.exists(data_dir):
         print(f"Data directory {data_dir} already exists.")
 
@@ -80,12 +79,11 @@ def download_data(data_dir: str) -> None:
 
 
 def export_to_onnx(
-        model: torch.nn.Module,
-        output_path: str,
-        input_size: int = 224,
-        device: str = "cuda",
+    model: torch.nn.Module,
+    output_path: str,
+    input_size: int = 224,
+    device: str = "cuda",
 ) -> None:
-
     output_dir = Path(output_path).parent
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -103,6 +101,7 @@ def export_to_onnx(
     print(f"Exporting model to ONNX (device: {device})...")
 
     import torch.onnx._internal.jit_utils as jit_utils
+
     original_add_attribute = jit_utils._add_attribute
 
     def patched_add_attribute(node, key, value, aten=False):

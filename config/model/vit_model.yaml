@@ -1,5 +1,5 @@
 _target_: models.vit_model.ViTModel
-model_name: 'WinKawaks/vit-tiny-patch16-224'
+model_name: "WinKawaks/vit-tiny-patch16-224"
 
 id2label:
   0: "not_smoking"
@@ -8,5 +8,4 @@ id2label:
 label2id:
   not_smoking: 0
   smoking: 1
-
 # model_name: ${model.model_name}
