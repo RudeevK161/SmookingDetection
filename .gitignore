@@ -142,3 +142,5 @@ outputs/*
 mlflow.db
 mlflow.sh
 mlflow_artifacts/*
+
+.idea/
